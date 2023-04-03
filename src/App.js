@@ -1,24 +1,32 @@
-import logo from './logo.svg';
-import './App.css';
+import { AnimatePresence } from "framer-motion";
+import { lazy, Suspense } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
+import AppFooter from "./components/shared/AppFooter";
+import AppHeader from "./components/shared/AppHeader";
+import "./css/App.css";
+import UseScrollToTop from "./hooks/useScrollToTop";
+const Home = lazy(() => import("./pages/Home"));
+const Projects = lazy(() => import("./pages/Projects"));
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AnimatePresence>
+      <div className=" bg-secondary-light dark:bg-primary-dark transition duration-300">
+        <Router>
+          <ScrollToTop />
+          <AppHeader />
+          <Suspense fallback={""}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="projects" element={<Projects />} />
+            </Routes>
+          </Suspense>
+          <AppFooter />
+        </Router>
+        <UseScrollToTop />
+      </div>
+    </AnimatePresence>
   );
 }
 
