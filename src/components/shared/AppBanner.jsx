@@ -45,7 +45,7 @@ const AppBanner = () => {
             }}
           >
             {" "}
-            PROAPP{" "}
+            WORKAPP{" "}
           </span>
         </motion.p>
         <motion.div
