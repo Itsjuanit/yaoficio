@@ -26,7 +26,10 @@ const ProjectsGrid = () => {
   };
 
   return (
-    <section className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen">
+    <section
+      className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen"
+      style={{ minHeight: "100vh" }}
+    >
       {/* <TagFilter items={projects} /> */}
       <div className="text-center">
         <p className="font-general-medium text-2xl sm:text-4xl mb-1 text-ternary-dark dark:text-ternary-light">
