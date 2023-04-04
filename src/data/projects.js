@@ -54,4 +54,20 @@ export const projectsData = [
     tag: "PLOMERO",
     number: "https://api.whatsapp.com/send?phone=542644655692",
   },
+  {
+    id: 8,
+    title: "Hugo Ruarte",
+    category:
+      "Es una persona sincera, hace su trabajo muy bien, no solo revisa aire acondicionados si no que tambien heladeras.",
+    tag: "REFRIGERACION",
+    number: "https://api.whatsapp.com/send?phone=542644004392",
+  },
+  {
+    id: 9,
+    title: "Victor Elizondo",
+    category:
+      "Muy amable, hace su trabajo, no solo es plomero, tambien gasista.",
+    tag: "PLOMERO",
+    number: "https://api.whatsapp.com/send?phone=542646616834",
+  },
 ];
