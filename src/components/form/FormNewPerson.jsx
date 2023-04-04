@@ -16,10 +16,7 @@ export const FormNewPerson = () => {
     }
     const data = { name, number, opinion, tag };
     axios
-      .post(
-        "https://sheet.best/api/sheets/d7422f06-7748-4ae1-b6ad-41bf47f4cea8",
-        data
-      )
+      .post(process.env.REACT_APP_SHEETS_API_URL, data)
       .then((response) => {
         console.log(response);
         setName("");
