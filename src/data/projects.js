@@ -47,4 +47,11 @@ export const projectsData = [
     tag: "MUEBLES",
     number: "https://api.whatsapp.com/send?phone=542644169375",
   },
+  {
+    id: 7,
+    title: "Patricio",
+    category: "Soluciona todo muy rápido, buen carácter ",
+    tag: "PLOMERO",
+    number: "https://api.whatsapp.com/send?phone=542644655692",
+  },
 ];
