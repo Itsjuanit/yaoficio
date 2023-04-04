@@ -45,7 +45,15 @@ export const FormNewPerson = () => {
               id="name"
               type="text"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => {
+                const regex = /^[a-zA-Z\s]+$/;
+                const inputText = event.target.value;
+                if (regex.test(inputText)) {
+                  setName(inputText);
+                } else {
+                  alert("Solo se permiten letras y espacios en blanco");
+                }
+              }}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
               style={{ borderRadius: "10px" }}
             />
