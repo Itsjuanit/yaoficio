@@ -110,6 +110,8 @@ export const FormNewPerson = () => {
               <option value="CARPINTERO">Carpintero</option>
               <option value="MUEBLES">Muebles</option>
               <option value="REFRIGERACION">Refrigeración</option>
+              <option value="GASISTA">Gasista</option>
+              <option value="METALURGICO">Metalúrgico</option>
             </select>
           </div>
           <button
