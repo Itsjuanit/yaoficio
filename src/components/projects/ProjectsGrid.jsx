@@ -1,12 +1,14 @@
-import { useContext } from "react";
+import { useState, useContext } from "react";
 import { ProjectsContext } from "../../context/ProjectsContext";
 import useThemeSwitcher from "../../hooks/useThemeSwitcher";
 import { AiOutlineWhatsApp } from "react-icons/ai";
+
 //import TagFilter from "../../components/TagFilter";
 
 const ProjectsGrid = () => {
   const { projects } = useContext(ProjectsContext);
   const [activeTheme] = useThemeSwitcher();
+  const [search, setSearch] = useState("");
 
   const getBackgroundImage = (tag) => {
     switch (tag.toUpperCase()) {
@@ -29,19 +31,49 @@ const ProjectsGrid = () => {
     }
   };
 
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  };
+
+  const filteredProjects = projects.filter((project) =>
+    project.tag
+      .split(",")
+      .some((tag) => tag.toLowerCase().includes(search.toLowerCase()))
+  );
+
   return (
     <section
       className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen"
       style={{ minHeight: "100vh" }}
     >
-      {/* <TagFilter items={projects} /> */}
-      <div className="text-center">
+      <div className="text-center mb-10">
         <p className="font-general-medium text-2xl sm:text-4xl mb-1 text-ternary-dark dark:text-ternary-light">
           LISTA DE WORKERS
         </p>
       </div>
+
+      <div className="max-w-screen-lg mx-auto">
+        <div>
+          <form className="px-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Busqueda de workers"
+                value={search}
+                onChange={handleSearch}
+                className="w-full py-3 pl-12 pr-4 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-indigo-600 mb-10"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(120deg, rgba(246, 211, 101, 0.2) 0%, rgba(253, 160, 133, 0.7) 100%)",
+                  color: "#212121",
+                }}
+              />
+            </div>
+          </form>
+        </div>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-lg mx-auto">
-        {projects.map((project) => (
+        {filteredProjects.map((project) => (
           <div key={project.id}>
             <div
               className="p-4 rounded-lg shadow-md border border-white transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl"
