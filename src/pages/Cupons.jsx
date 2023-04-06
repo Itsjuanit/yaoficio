@@ -1,10 +1,11 @@
-import React from "react";
 import { CuponsGrid } from "../components/cupons/CuponsGrid";
 
-export const Cupons = () => {
+const Cupons = () => {
   return (
-    <div>
+    <div className="container mx-auto">
       <CuponsGrid />
     </div>
   );
 };
+
+export default Cupons;

@@ -6,6 +6,7 @@ import AppFooter from "./components/shared/AppFooter";
 import AppHeader from "./components/shared/AppHeader";
 import "./css/App.css";
 import UseScrollToTop from "./hooks/useScrollToTop";
+
 const Home = lazy(() => import("./pages/Home"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Form = lazy(() => import("./pages/Form"));
@@ -23,12 +24,12 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="projects" element={<Projects />} />
               <Route path="form" element={<Form />} />
-              <Route path="form" element={<Cupons />} />
+              <Route path="cupons" element={<Cupons />} />
             </Routes>
           </Suspense>
           <AppFooter />
+          <UseScrollToTop />
         </Router>
-        <UseScrollToTop />
       </div>
     </AnimatePresence>
   );
