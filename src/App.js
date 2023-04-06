@@ -9,6 +9,7 @@ import UseScrollToTop from "./hooks/useScrollToTop";
 const Home = lazy(() => import("./pages/Home"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Form = lazy(() => import("./pages/Form"));
+const Cupons = lazy(() => import("./pages/Cupons"));
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="projects" element={<Projects />} />
               <Route path="form" element={<Form />} />
+              <Route path="form" element={<Cupons />} />
             </Routes>
           </Suspense>
           <AppFooter />

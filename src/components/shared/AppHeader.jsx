@@ -110,6 +110,13 @@ const AppHeader = () => {
             </span>{" "}
             QUE RECOMENDAR?
           </Link>
+          <Link
+            to="/cupons"
+            className="block text-left text-lg text-primary-dark dark:text-ternary-light hover:text-secondary-dark dark:hover:text-secondary-light  sm:mx-4 mb-2 sm:py-2"
+            aria-label="Projects"
+          >
+            CUPONERA
+          </Link>
         </div>
 
         {/* Header links large screen */}
@@ -136,6 +143,13 @@ const AppHeader = () => {
               WORKERS
             </span>{" "}
             QUE RECOMENDAR?
+          </Link>
+          <Link
+            to="/cupons"
+            className="block text-left text-lg text-primary-dark dark:text-ternary-light hover:text-secondary-dark dark:hover:text-secondary-light  sm:mx-4 mb-2 sm:py-2"
+            aria-label="Projects"
+          >
+            CUPONERA
           </Link>
         </div>
 
