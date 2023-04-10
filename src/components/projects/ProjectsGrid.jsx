@@ -26,6 +26,8 @@ const ProjectsGrid = () => {
         return "linear-gradient(to top, #f8ac08 0%, #576061 100%)";
       case "METALURGICO":
         return "linear-gradient(to top, #03e4ac 0%, #ee1e9e 100%)";
+      case "CERRAJERO":
+        return "linear-gradient(to top, #bbf0e4 0%, #7bafda 100%)";
       default:
         return ""; // Si no hay coincidencia, devuelve una cadena vacía o el valor por defecto que desees
     }

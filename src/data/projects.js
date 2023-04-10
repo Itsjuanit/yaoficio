@@ -70,4 +70,11 @@ export const projectsData = [
     tag: "PLOMERO",
     number: "https://api.whatsapp.com/send?phone=542646616834",
   },
+  {
+    id: 10,
+    title: "Cerrajería Central 24 hs",
+    category: "Muy rapidos y atentos.",
+    tag: "CERRAJERO",
+    number: "https://api.whatsapp.com/send?phone=542645800684",
+  },
 ];
