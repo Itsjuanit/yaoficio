@@ -1,16 +1,18 @@
-import { useState, useContext } from "react";
-import { ProjectsContext } from "../../context/ProjectsContext";
+import { useState, useEffect } from "react";
 import useThemeSwitcher from "../../hooks/useThemeSwitcher";
 import { AiOutlineWhatsApp } from "react-icons/ai";
 
-//import TagFilter from "../../components/TagFilter";
-
 const ProjectsGrid = () => {
-  const { projects } = useContext(ProjectsContext);
   const [activeTheme] = useThemeSwitcher();
   const [search, setSearch] = useState("");
+  const [data, setData] = useState([]);
+  const [dataTag, setTag] = useState([]);
+  const URL = "https://bkworkers-production.up.railway.app/api";
 
   const getBackgroundImage = (tag) => {
+    if (!tag) {
+      return "";
+    }
     switch (tag.toUpperCase()) {
       case "ELECTRICISTA":
         return "linear-gradient(to top, #fad0c4 0%, #ffd1ff 100%)";
@@ -29,7 +31,7 @@ const ProjectsGrid = () => {
       case "CERRAJERO":
         return "linear-gradient(to top, #bbf0e4 0%, #7bafda 100%)";
       default:
-        return ""; // Si no hay coincidencia, devuelve una cadena vacía o el valor por defecto que desees
+        return "";
     }
   };
 
@@ -37,11 +39,17 @@ const ProjectsGrid = () => {
     setSearch(e.target.value);
   };
 
-  const filteredProjects = projects.filter((project) =>
-    project.tag
-      .split(",")
-      .some((tag) => tag.toLowerCase().includes(search.toLowerCase()))
-  );
+  useEffect(() => {
+    fetch(URL + "/worker")
+      .then((res) => res.json())
+      .then((data) => setData(data?.worker));
+  }, []);
+
+  useEffect(() => {
+    fetch(URL + "/tag")
+      .then((res) => res.json())
+      .then((data) => setTag(data?.tag));
+  }, [dataTag]);
 
   return (
     <section
@@ -75,28 +83,30 @@ const ProjectsGrid = () => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-lg mx-auto">
-        {filteredProjects.map((project) => (
-          <div key={project.id}>
-            <div
-              className="p-4 rounded-lg shadow-md border border-white transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl"
-              style={{
-                backgroundImage:
-                  "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
-              }}
-            >
-              <h3
-                className="font-medium text-lg mb-2 font-bold"
-                style={{ color: "#212121" }}
+        {data
+          ?.filter((project) =>
+            project.tag?.name.toLowerCase().includes(search.toLowerCase())
+          )
+          .map((project) => (
+            <div key={project._id}>
+              <div
+                className="p-4 rounded-lg shadow-md border border-white transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
+                }}
               >
-                {project.title}
-              </h3>
-              <p className="text-sm mb-2">{project.category}</p>
-              <div className="flex flex-wrap mb-4">
-                {project.tag.split(",").map((tag) => (
+                <h3
+                  className="font-medium text-lg mb-2 font-bold"
+                  style={{ color: "#212121" }}
+                >
+                  {project.name}
+                </h3>
+                <div>{project.opinion}</div>
+                <div className="flex flex-wrap mb-4">
                   <button
-                    key={tag}
                     style={{
-                      backgroundImage: getBackgroundImage(tag),
+                      backgroundImage: getBackgroundImage(project.tag?.name),
                       backgroundColor:
                         activeTheme === "dark" ? "#312E81" : "#fff",
                       color: "#212121",
@@ -113,40 +123,39 @@ const ProjectsGrid = () => {
                       marginRight: "5px",
                     }}
                   >
-                    {tag}
+                    {project.tag ? project.tag.name : ""}
                   </button>
-                ))}
-              </div>
-              <a
-                href={project.number}
-                target="_blank"
-                rel="noreferrer"
-                className="text-indigo-900 px-4 py-2 rounded-lg shadow cursor-pointer inline-block"
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                }}
-              >
-                <div
+                </div>
+                <a
+                  href={project.phone_number}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-indigo-900 px-4 py-2 rounded-lg shadow cursor-pointer inline-block"
                   style={{
-                    backgroundImage:
-                      "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
-                    borderRadius: "inherit",
-                    padding: "inherit",
-                    width: "150px",
+                    display: "flex",
+                    justifyContent: "center",
                   }}
                 >
-                  <div class="flex items-center">
-                    <span class="mr-2">
-                      <AiOutlineWhatsApp />
-                    </span>
-                    <span className="text-bold">WhatsApp</span>
+                  <div
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
+                      borderRadius: "inherit",
+                      padding: "inherit",
+                      width: "150px",
+                    }}
+                  >
+                    <div className="flex items-center">
+                      <span className="mr-2">
+                        <AiOutlineWhatsApp />
+                      </span>
+                      <span className="text-bold">WhatsApp</span>
+                    </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </section>
   );

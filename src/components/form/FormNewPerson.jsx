@@ -1,28 +1,38 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { FaCheckCircle, FaTimes } from "react-icons/fa";
+
 export const FormNewPerson = () => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [opinion, setOpinion] = useState("");
-  const [tag, setTag] = useState("");
+  const [tag, setTag] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const URL = "https://bkworkers-production.up.railway.app/api/worker";
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!name || !number || !opinion || !tag) {
+    if (!name || !number || !opinion || !tag.name) {
       alert("Por favor completa todos los campos");
       return;
     }
-    const data = { name, number, opinion, tag };
-    axios
-      .post(process.env.REACT_APP_SHEETS_API_URL, data)
+    const data = {
+      name,
+      phone_number: "https://api.whatsapp.com/send?phone=54" + number,
+      opinion,
+      tag,
+    };
+
+    fetch(URL, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+    })
       .then((response) => {
         console.log(response);
         setName("");
         setNumber("");
         setOpinion("");
-        setTag("");
+        setTag({});
         setShowModal(true);
       })
       .catch((error) => {
@@ -67,7 +77,7 @@ export const FormNewPerson = () => {
             </label>
             <input
               id="number"
-              type="number"
+              type="text"
               value={number}
               onChange={(event) => setNumber(event.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
@@ -99,29 +109,38 @@ export const FormNewPerson = () => {
             </label>
             <select
               id="tag"
-              value={tag}
-              onChange={(event) => setTag(event.target.value)}
+              value={tag.name || ""}
+              onChange={(event) => setTag(JSON.parse(event.target.value))}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
               style={{ borderRadius: "10px" }}
             >
-              <option value="">Selecciona una categoría</option>
-              <option value="ELECTRICISTA">Electricista</option>
-              <option value="PLOMERO">Plomero</option>
-              <option value="CARPINTERO">Carpintero</option>
-              <option value="MUEBLES">Muebles</option>
-              <option value="REFRIGERACION">Refrigeración</option>
-              <option value="GASISTA">Gasista</option>
-              <option value="METALURGICO">Metalúrgico</option>
+              <option value={JSON.stringify({})}>
+                Selecciona una categoría
+              </option>
+              <option value='{"_id": "642f23bf2208cb79a3f8f591", "name": "electricista"}'>
+                Electricista
+              </option>
+              <option value='{"_id": "642f23c62208cb79a3f8f593", "name": "plomero"}'>
+                Plomero
+              </option>
+              <option value='{"_id": "6435dc2103dbc6090aa6985a", "name": "carpintero"}'>
+                Carpintero
+              </option>
+              <option value='{"_id": "6435dc1503dbc6090aa69859", "name": "muebles"}'>
+                Muebles
+              </option>
+              <option value='{"_id": "6435dc0603dbc6090aa69858", "name": "refrigeracion"}'>
+                Refrigeración
+              </option>
+              <option value='{"_id": "6435dbe403dbc6090aa69857", "name": "cerrajero"}'>
+                Cerrajero
+              </option>
+              <option value='{"_id": "6435e46103dbc6090aa6986b", "name": "metalurgico"}'>
+                Metalúrgico
+              </option>
             </select>
           </div>
           <button
-            onClick={() => {
-              if (!name || !number || !opinion || !tag) {
-                alert("Por favor completa todos los campos");
-                return;
-              }
-              setShowModal(true);
-            }}
             style={{
               backgroundImage:
                 "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
@@ -133,6 +152,7 @@ export const FormNewPerson = () => {
           >
             ENVIAR
           </button>
+
           {showModal && (
             <div
               className="fixed inset-0 flex items-center justify-center"
