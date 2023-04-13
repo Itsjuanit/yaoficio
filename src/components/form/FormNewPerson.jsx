@@ -53,6 +53,10 @@ export const FormNewPerson = () => {
     setTag(event.target.value);
   };
 
+  const capitalizeFirstLetter = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   return (
     <div className="container mx-auto">
       <div className="w-full max-w-md mx-auto mt-8 bg-white shadow-md rounded px-8 pt-6 pb-8">
@@ -130,43 +134,11 @@ export const FormNewPerson = () => {
               >
                 {tags.map((item) => (
                   <option key={item._id} value={item._id}>
-                    {item.name}
+                    {capitalizeFirstLetter(item.name)}
                   </option>
                 ))}
               </select>
             )}
-            {/* <select
-              id="tag"
-              value={tag.name || ""}
-              onChange={(event) => setTag(JSON.parse(event.target.value))}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
-              style={{ borderRadius: "10px" }}
-            >
-              <option value={JSON.stringify({})}>
-                Selecciona una categoría
-              </option>
-              <option value='{"_id": "642f23bf2208cb79a3f8f591", "name": "electricista"}'>
-                Electricista
-              </option>
-              <option value='{"_id": "642f23c62208cb79a3f8f593", "name": "plomero"}'>
-                Plomero
-              </option>
-              <option value='{"_id": "6435dc2103dbc6090aa6985a", "name": "carpintero"}'>
-                Carpintero
-              </option>
-              <option value='{"_id": "6435dc1503dbc6090aa69859", "name": "muebles"}'>
-                Muebles
-              </option>
-              <option value='{"_id": "6435dc0603dbc6090aa69858", "name": "refrigeracion"}'>
-                Refrigeración
-              </option>
-              <option value='{"_id": "6435dbe403dbc6090aa69857", "name": "cerrajero"}'>
-                Cerrajero
-              </option>
-              <option value='{"_id": "6435e46103dbc6090aa6986b", "name": "metalurgico"}'>
-                Metalúrgico
-              </option>
-            </select> */}
           </div>
           <button
             style={{
