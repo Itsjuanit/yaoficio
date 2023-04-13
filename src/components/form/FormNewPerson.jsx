@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaCheckCircle, FaTimes } from "react-icons/fa";
 
 export const FormNewPerson = () => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [opinion, setOpinion] = useState("");
-  const [tag, setTag] = useState({});
+  const [tag, setTag] = useState();
+  const [tags, setTags] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const URL = "https://bkworkers-production.up.railway.app/api/worker";
+  const URLTAGS = "https://bkworkers-production.up.railway.app/api/tag";
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (!name || !number || !opinion || !tag.name) {
+    if (!name || !number || !opinion || !tag) {
       alert("Por favor completa todos los campos");
       return;
     }
@@ -38,6 +40,17 @@ export const FormNewPerson = () => {
       .catch((error) => {
         console.error(error);
       });
+  };
+
+  useEffect(() => {
+    fetch(URLTAGS)
+      .then((res) => res.json())
+      .then((data) => setTags(data?.tags));
+  }, []);
+
+  const onChangeSelect = (event) => {
+    //console.log(event.target.value);
+    setTag(event.target.value);
   };
 
   return (
@@ -107,7 +120,22 @@ export const FormNewPerson = () => {
             >
               Categoría:
             </label>
-            <select
+            {tags && (
+              <select
+                id="tag"
+                value={tag}
+                onChange={onChangeSelect}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
+                style={{ borderRadius: "10px" }}
+              >
+                {tags.map((item) => (
+                  <option key={item._id} value={item._id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            )}
+            {/* <select
               id="tag"
               value={tag.name || ""}
               onChange={(event) => setTag(JSON.parse(event.target.value))}
@@ -138,7 +166,7 @@ export const FormNewPerson = () => {
               <option value='{"_id": "6435e46103dbc6090aa6986b", "name": "metalurgico"}'>
                 Metalúrgico
               </option>
-            </select>
+            </select> */}
           </div>
           <button
             style={{
