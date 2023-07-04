@@ -8,7 +8,7 @@ const Contact = () => {
       transition={{
         ease: "easeInOut",
         duration: 0.5,
-        delay: 0.1,
+        delay: 0.11,
       }}
       className="container mx-auto flex flex-col-reverse lg:flex-row py-5 lg:py-10 lg:mt-10"
     ></motion.div>
