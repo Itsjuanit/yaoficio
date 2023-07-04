@@ -39,9 +39,17 @@ const ProjectsGrid = () => {
   };
 
   useEffect(() => {
-    fetch(URL + "/worker?status=active")
-      .then((res) => res.json())
-      .then((data) => setData(data?.worker));
+    const fetchWorkerData = async () => {
+      try {
+        const response = await fetch(`${URL}/worker?status=active`);
+        const data = await response.json();
+        setData(data?.worker);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchWorkerData();
   }, []);
 
   useEffect(() => {
