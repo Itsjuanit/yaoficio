@@ -8,8 +8,8 @@ export const FormNewPerson = () => {
   const [tag, setTag] = useState();
   const [tags, setTags] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const URL = "https://bkworkers-production.up.railway.app/api/worker";
-  const URLTAGS = "https://bkworkers-production.up.railway.app/api/tag";
+  const URL = `${process.env.REACT_APP_API_PROD}/api/worker`;
+  const URLTAGS = `${process.env.REACT_APP_API_PROD}/api/tag`;
 
   const handleSubmit = (event) => {
     event.preventDefault();

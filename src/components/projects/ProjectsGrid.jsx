@@ -7,8 +7,7 @@ const ProjectsGrid = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [dataTag, setTag] = useState([]);
-  const URL = "https://bkworkers-production.up.railway.app/api";
-
+  const URL = `${process.env.REACT_APP_API_PROD}/api`;
   const getBackgroundImage = (tag) => {
     if (!tag) {
       return "";
@@ -40,7 +39,7 @@ const ProjectsGrid = () => {
   };
 
   useEffect(() => {
-    fetch(URL + "/worker")
+    fetch(URL + "/worker?status=active")
       .then((res) => res.json())
       .then((data) => setData(data?.worker));
   }, []);
