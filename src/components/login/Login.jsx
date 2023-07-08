@@ -1,9 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
+import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 const handleSubmit = (event) => {
   event.preventDefault();
   console.log("Submit");
 };
 export const Login = () => {
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const handlePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
   return (
     <div className="container mx-auto">
       <div
@@ -19,6 +25,7 @@ export const Login = () => {
             <label
               htmlFor="name"
               className="block text-gray-700 text-sm font-bold mb-2"
+              type="email"
             >
               Email
             </label>
@@ -34,12 +41,28 @@ export const Login = () => {
             >
               Contraseña
             </label>
-            <input
-              id="name"
-              type="password"
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
-              style={{ borderRadius: "10px" }}
-            />
+            <div className="mb-4 relative">
+              <input
+                id="password"
+                type={passwordVisible ? "text" : "password"}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md pr-10"
+                style={{
+                  borderRadius: "10px",
+                  paddingRight: "10px",
+                }}
+              />
+              <div
+                className="absolute inset-y-0 right-0 pr-3 flex items-center justify-center cursor-pointer"
+                onClick={handlePasswordVisibility}
+              >
+                {passwordVisible ? (
+                  <AiFillEye size={20} />
+                ) : (
+                  <AiFillEyeInvisible size={20} />
+                )}
+              </div>
+            </div>
+
             <button
               style={{
                 backgroundImage:

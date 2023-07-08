@@ -62,6 +62,24 @@ export const Dashboard = () => {
     }
   };
 
+  const handleDeleteCard = async (cardId) => {
+    try {
+      const response = await fetch(`${URL}/${cardId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        // Actualizar el estado local de las tarjetas
+        setCards((prevCards) =>
+          prevCards.filter((card) => card._id !== cardId)
+        );
+      } else {
+        throw new Error("Error deleting card");
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="bg-white shadow py-6 px-4">
@@ -90,17 +108,36 @@ export const Dashboard = () => {
                   <p>Opinion: {card.opinion}</p>
                   <p>Status: {card.status}</p>
                   <p>Tag: {card.tag.name}</p>
-                  <div className="flex mt-3">
+                  <div className="flex mt-3 items-center justify-center">
                     {card.status === "inactive" ? (
                       <button
-                        className="flex items-center text-green-500 rounded-full mr-2"
+                        className="flex items-center justify-center text-green-500 rounded-full ml-2"
                         onClick={() => handleActivateCard(card._id)}
+                        style={{
+                          backgroundImage:
+                            "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
+                          borderRadius: "10px",
+                          padding: "inherit",
+                          width: "50px",
+                        }}
+                        title="Se agrega a la lista de workers"
                       >
                         <AiOutlineCheck className="text-xl mr-1" />
                       </button>
                     ) : null}
-                    <button className="flex items-center text-green-500 rounded-full ml-2">
-                      <AiOutlineClose className="text-xl mr-1" />
+                    <button
+                      className="flex items-center justify-center text-green-500 rounded-full ml-2"
+                      onClick={() => handleDeleteCard(card._id)}
+                      style={{
+                        backgroundImage:
+                          "linear-gradient(120deg, #fc798a 0%, #d4b0b0 100%)",
+                        borderRadius: "10px",
+                        padding: "inherit",
+                        width: "50px",
+                      }}
+                      title="Se elimina de la base de datos"
+                    >
+                      <AiOutlineClose className="text-xl" />
                     </button>
                   </div>
                 </div>
