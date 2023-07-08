@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { FaCheckCircle, FaTimes } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const FormNewPerson = () => {
   const [name, setName] = useState("");
@@ -7,14 +8,13 @@ export const FormNewPerson = () => {
   const [opinion, setOpinion] = useState("");
   const [tag, setTag] = useState();
   const [tags, setTags] = useState([]);
-  const [showModal, setShowModal] = useState(false);
   const URL = `${process.env.REACT_APP_API_PROD}/api/worker`;
   const URLTAGS = `${process.env.REACT_APP_API_PROD}/api/tag`;
 
   const handleSubmit = (event) => {
     event.preventDefault();
     if (!name || !number || !opinion || !tag) {
-      alert("Por favor completa todos los campos");
+      toast.error("Por favor completa todos los campos");
       return;
     }
     const data = {
@@ -35,7 +35,7 @@ export const FormNewPerson = () => {
         setNumber("");
         setOpinion("");
         setTag({});
-        setShowModal(true);
+        toast.success("Tu información ha sido enviada.");
       })
       .catch((error) => {
         console.error(error);
@@ -49,14 +49,12 @@ export const FormNewPerson = () => {
   }, []);
 
   const onChangeSelect = (event) => {
-    //console.log(event.target.value);
     setTag(event.target.value);
   };
 
   const capitalizeFirstLetter = (str) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
-
   return (
     <div className="container mx-auto">
       <div className="w-full max-w-md mx-auto mt-8 bg-white shadow-md rounded px-8 pt-6 pb-8">
@@ -152,49 +150,9 @@ export const FormNewPerson = () => {
           >
             ENVIAR
           </button>
-
-          {showModal && (
-            <div
-              className="fixed inset-0 flex items-center justify-center"
-              style={{
-                background: "rgba(0, 0, 0, 0.5)",
-              }}
-            >
-              <div
-                className="rounded-full border-4 border-red-500 flex items-center justify-center"
-                style={{
-                  width: "350px",
-                  height: "100px",
-                  backgroundImage:
-                    "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
-                  color: "#212121",
-                  borderRadius: "10px",
-                }}
-              >
-                <div className="bg-white rounded-lg p-8">
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline absolute top-0 right-0"
-                  >
-                    <FaTimes
-                      style={{
-                        top: "0",
-                        right: "0",
-                        width: "100%",
-                        color: "#212121",
-                      }}
-                    />
-                  </button>
-                  <p className="text-lg font-bold">
-                    Tu información ha sido enviada.
-                    <FaCheckCircle />
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

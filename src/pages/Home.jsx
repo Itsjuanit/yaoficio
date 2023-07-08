@@ -5,7 +5,6 @@ const Home = () => {
   return (
     <div className="container mx-auto">
       <AppBanner></AppBanner>
-
       <ProjectsGrid></ProjectsGrid>
     </div>
   );

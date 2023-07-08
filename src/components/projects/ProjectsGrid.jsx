@@ -80,8 +80,8 @@ const ProjectsGrid = () => {
                 onChange={handleSearch}
                 className="w-full py-3 pl-12 pr-4 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-indigo-600 mb-10"
                 style={{
-                  backgroundImage:
-                    "linear-gradient(120deg, rgba(246, 211, 101, 0.2) 0%, rgba(253, 160, 133, 0.7) 100%)",
+                  // backgroundImage:
+                  //   "linear-gradient(120deg, rgba(246, 211, 101, 0.2) 0%, rgba(253, 160, 133, 0.7) 100%)",
                   color: "#212121",
                 }}
               />
