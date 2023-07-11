@@ -5,75 +5,37 @@ export const Dashboard = () => {
   const [cards, setCards] = useState([]);
   const URL = `${process.env.REACT_APP_API_PROD}/api/worker`;
 
-  useEffect(() => {
-    const fetchCards = async () => {
-      try {
-        const response = await fetch(`${URL}?status=inactive`);
-        if (response.ok) {
-          const data = await response.json();
-          console.log(data);
-          setCards(data.worker);
-        } else {
-          throw new Error("Error fetching cards");
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchCards();
-  }, []);
-
-  const handleActivateCard = async (cardId) => {
+  const fetchCards = async () => {
     try {
-      const response = await fetch(`${URL}/${cardId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ status: "active" }),
-      });
+      const response = await fetch(`${URL}?status=inactive`);
       if (response.ok) {
-        // Actualizar el estado local de las tarjetas
-        setCards((prevCards) =>
-          prevCards.map((card) =>
-            card._id === cardId ? { ...card, status: "active" } : card
-          )
-        );
-
-        // Verificar si el estado se actualizó correctamente en la base de datos
-        const updatedCardResponse = await fetch(`${URL}/${cardId}`);
-        if (updatedCardResponse.ok) {
-          const updatedCardData = await updatedCardResponse.json();
-          const updatedCardStatus = updatedCardData.worker.status;
-          if (updatedCardStatus === "active") {
-            console.log("Estado actualizado correctamente a 'active'");
-          } else {
-            console.log("No se pudo actualizar el estado a 'active'");
-          }
-        } else {
-          console.log("Error al obtener la tarjeta actualizada");
-        }
+        const data = await response.json();
+        console.log(data);
+        setCards(data.worker);
       } else {
-        throw new Error("Error activating card");
+        throw new Error("Error fetching cards");
       }
     } catch (error) {
       console.error(error);
     }
   };
+  useEffect(() => {
+    fetchCards();
+  }, []);
 
-  const handleDeleteCard = async (cardId) => {
+  const handleActivateCard = async (cardId, status) => {
     try {
       const response = await fetch(`${URL}/${cardId}`, {
-        method: "DELETE",
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status }),
       });
       if (response.ok) {
-        // Actualizar el estado local de las tarjetas
-        setCards((prevCards) =>
-          prevCards.filter((card) => card._id !== cardId)
-        );
+        fetchCards();
       } else {
-        throw new Error("Error deleting card");
+        throw new Error("Error activating card");
       }
     } catch (error) {
       console.error(error);
@@ -112,7 +74,7 @@ export const Dashboard = () => {
                     {card.status === "inactive" ? (
                       <button
                         className="flex items-center justify-center text-green-500 rounded-full ml-2"
-                        onClick={() => handleActivateCard(card._id)}
+                        onClick={() => handleActivateCard(card._id, "active")}
                         style={{
                           backgroundImage:
                             "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
@@ -127,7 +89,7 @@ export const Dashboard = () => {
                     ) : null}
                     <button
                       className="flex items-center justify-center text-green-500 rounded-full ml-2"
-                      onClick={() => handleDeleteCard(card._id)}
+                      onClick={() => handleActivateCard(card._id, "rejected")}
                       style={{
                         backgroundImage:
                           "linear-gradient(120deg, #fc798a 0%, #d4b0b0 100%)",

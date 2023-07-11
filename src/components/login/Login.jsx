@@ -62,7 +62,6 @@ export const Login = () => {
                 )}
               </div>
             </div>
-
             <button
               style={{
                 backgroundImage:
