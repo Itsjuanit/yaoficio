@@ -1,11 +1,11 @@
 import AppBanner from "../components/shared/AppBanner";
-import ProjectsGrid from "../components/projects/ProjectsGrid";
+import WorkersGrid from "../components/workers/WorkersGrid";
 
 const Home = () => {
   return (
     <div className="container mx-auto">
       <AppBanner></AppBanner>
-      <ProjectsGrid></ProjectsGrid>
+      <WorkersGrid></WorkersGrid>
     </div>
   );
 };

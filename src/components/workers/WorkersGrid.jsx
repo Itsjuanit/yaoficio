@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import useThemeSwitcher from "../../hooks/useThemeSwitcher";
 import { AiOutlineWhatsApp } from "react-icons/ai";
 
-const ProjectsGrid = () => {
+const WorkersGrid = () => {
   const [activeTheme] = useThemeSwitcher();
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -168,4 +168,4 @@ const ProjectsGrid = () => {
   );
 };
 
-export default ProjectsGrid;
+export default WorkersGrid;

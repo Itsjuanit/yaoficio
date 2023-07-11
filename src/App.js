@@ -9,7 +9,7 @@ import UseScrollToTop from "./hooks/useScrollToTop";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage"; // Corrige esta línea
 const Home = lazy(() => import("./pages/Home"));
-const Projects = lazy(() => import("./pages/Projects"));
+const Workers = lazy(() => import("./pages/Workers"));
 const Form = lazy(() => import("./pages/Form"));
 
 function App() {
@@ -22,7 +22,7 @@ function App() {
           <Suspense fallback={""}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="projects" element={<Projects />} />
+              <Route path="workers" element={<Workers />} />
               <Route path="form" element={<Form />} />
               <Route path="dashboard" element={<DashboardPage />} />{" "}
               <Route path="login" element={<LoginPage />} />{" "}
