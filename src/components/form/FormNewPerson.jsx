@@ -17,6 +17,7 @@ export const FormNewPerson = () => {
       toast.error("Por favor completa todos los campos");
       return;
     }
+
     const data = {
       name,
       phone_number: "https://api.whatsapp.com/send?phone=54" + number,
@@ -24,10 +25,15 @@ export const FormNewPerson = () => {
       tag,
     };
 
+    const token = localStorage.getItem("authToken");
+
     fetch(URL, {
       method: "POST",
       body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-token": token,
+      },
     })
       .then((response) => {
         console.log(response);

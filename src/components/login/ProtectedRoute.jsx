@@ -15,4 +15,4 @@ const ProtectedRoute = ({ component: Component, ...rest }) => {
   );
 };
 
-export default ProtectedRoute; // Agrega esta línea
+export default ProtectedRoute;
