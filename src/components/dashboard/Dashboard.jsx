@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 export const Dashboard = () => {
   const [cards, setCards] = useState([]);
   const URL = `${process.env.REACT_APP_API_PROD}/api/worker`;
+  const navigate = useNavigate();
 
   const fetchCards = async () => {
     try {
@@ -19,9 +21,16 @@ export const Dashboard = () => {
       console.error(error);
     }
   };
+
   useEffect(() => {
-    fetchCards();
-  }, []);
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      navigate("/login");
+    } else {
+      fetchCards();
+    }
+  }, [navigate]);
 
   const handleActivateCard = async (cardId, status) => {
     try {

@@ -7,7 +7,7 @@ import AppHeader from "./components/shared/AppHeader";
 import "./css/App.css";
 import UseScrollToTop from "./hooks/useScrollToTop";
 import DashboardPage from "./pages/DashboardPage";
-import LoginPage from "./pages/LoginPage"; // Corrige esta línea
+import LoginPage from "./pages/LoginPage";
 const Home = lazy(() => import("./pages/Home"));
 const Workers = lazy(() => import("./pages/Workers"));
 const Form = lazy(() => import("./pages/Form"));
@@ -24,9 +24,8 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="workers" element={<Workers />} />
               <Route path="form" element={<Form />} />
-              <Route path="dashboard" element={<DashboardPage />} />{" "}
+              <Route path="dashboard" element={<DashboardPage />} />
               <Route path="login" element={<LoginPage />} />{" "}
-              {/* Corrige esta línea */}
             </Routes>
           </Suspense>
           <AppFooter />

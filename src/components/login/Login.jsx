@@ -1,15 +1,46 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
-const handleSubmit = (event) => {
-  event.preventDefault();
-  console.log("Submit");
-};
+import { useNavigate } from "react-router-dom";
+
 export const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
   const handlePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch(
+        "https://bkworkers-api.up.railway.app/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error en la autenticación");
+      }
+
+      const data = await response.json();
+
+      localStorage.setItem("authToken", data.token);
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   return (
     <div className="container mx-auto">
       <div
@@ -34,6 +65,8 @@ export const Login = () => {
               type="email"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
               style={{ borderRadius: "10px" }}
+              value={email} // Agrega esta línea
+              onChange={(e) => setEmail(e.target.value)} // Agrega esta línea
             />
             <label
               htmlFor="name"
@@ -50,6 +83,8 @@ export const Login = () => {
                   borderRadius: "10px",
                   paddingRight: "10px",
                 }}
+                value={password} // Agrega esta línea
+                onChange={(e) => setPassword(e.target.value)} // Agrega esta línea
               />
               <div
                 className="absolute inset-y-0 right-0 pr-3 flex items-center justify-center cursor-pointer"
