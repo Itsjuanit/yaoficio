@@ -90,9 +90,9 @@ const AppHeader = () => {
           <Link
             to="/workers"
             className="block text-left text-lg text-primary-dark dark:text-ternary-light hover:text-secondary-dark dark:hover:text-secondary-light  sm:mx-4 mb-2 sm:py-2"
-            aria-label="Workers"
+            aria-label="Trabajadores"
           >
-            WORKERS
+            TRABAJADORES
           </Link>
           <Link
             to="/form"
@@ -106,7 +106,7 @@ const AppHeader = () => {
                   "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
               }}
             >
-              WORKERS
+              TRABAJADORES
             </span>{" "}
             QUE RECOMENDAR?
           </Link>
@@ -117,9 +117,9 @@ const AppHeader = () => {
           <Link
             to="/workers"
             className="block text-left text-lg text-primary-dark dark:text-ternary-light hover:text-secondary-dark dark:hover:text-secondary-light  sm:mx-4 mb-2 sm:py-2"
-            aria-label="Workers"
+            aria-label="Trabajadores"
           >
-            WORKERS
+            TRABAJADORES
           </Link>
           <Link
             to="/form"
@@ -133,7 +133,7 @@ const AppHeader = () => {
                   "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
               }}
             >
-              WORKERS
+              TRABAJADORES
             </span>{" "}
             QUE RECOMENDAR?
           </Link>

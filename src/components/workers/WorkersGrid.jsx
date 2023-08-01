@@ -65,7 +65,7 @@ const WorkersGrid = () => {
     >
       <div className="text-center mb-10">
         <p className="font-general-medium text-2xl sm:text-4xl mb-1 text-ternary-dark dark:text-ternary-light">
-          LISTA DE WORKERS
+          LISTA DE TRABAJADORES
         </p>
       </div>
 
@@ -75,13 +75,11 @@ const WorkersGrid = () => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Busqueda de workers"
+                placeholder="Busqueda de trabajadores"
                 value={search}
                 onChange={handleSearch}
                 className="w-full py-3 pl-12 pr-4 text-gray-500 border rounded-md outline-none bg-gray-50 focus:bg-white focus:border-indigo-600 mb-10"
                 style={{
-                  // backgroundImage:
-                  //   "linear-gradient(120deg, rgba(246, 211, 101, 0.2) 0%, rgba(253, 160, 133, 0.7) 100%)",
                   color: "#212121",
                 }}
               />

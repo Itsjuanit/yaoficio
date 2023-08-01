@@ -91,7 +91,7 @@ export const Dashboard = () => {
                           padding: "inherit",
                           width: "50px",
                         }}
-                        title="Se agrega a la lista de workers"
+                        title="Se agrega a la lista de trabajadores"
                       >
                         <AiOutlineCheck className="text-xl mr-1" />
                       </button>

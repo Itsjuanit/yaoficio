@@ -1,4 +1,4 @@
-import { FiGithub, FiLinkedin, FiLogIn } from "react-icons/fi";
+import { FiGithub, FiLinkedin, FiCheckCircle } from "react-icons/fi";
 import { Link } from "react-router-dom";
 
 const socialLinks = [
@@ -52,7 +52,7 @@ const AppFooter = () => {
             aria-label="Login"
             title="Iniciar sesión"
           >
-            <FiLogIn />
+            <FiCheckCircle />
           </Link>
         </div>
       </div>

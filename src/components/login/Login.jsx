@@ -1,8 +1,12 @@
 import React, { useState } from "react";
 import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import useThemeSwitcher from "../../hooks/useThemeSwitcher";
 
 export const Login = () => {
+  const [activeTheme] = useThemeSwitcher();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -27,9 +31,16 @@ export const Login = () => {
         }
       );
 
-      if (!response.ok) {
+      if (response.status === 401) {
+        toast.error("El token no es válido");
+        return;
+      }
+
+      if (response.status !== 200) {
         throw new Error("Error en la autenticación");
       }
+
+      toast.success("Autenticación exitosa");
 
       const data = await response.json();
 
@@ -38,6 +49,7 @@ export const Login = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Error:", error);
+      toast.error("Por favor cargar usuario y contraseña correctos.");
     }
   };
 
@@ -55,25 +67,28 @@ export const Login = () => {
           <div className="mb-4">
             <label
               htmlFor="name"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 text-sm font-semibold mb-2"
               type="email"
+              style={{ color: activeTheme === "light" ? "#fff" : "#212121" }}
             >
-              Email
+              EMAIL
             </label>
             <input
               id="name"
               type="email"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
               style={{ borderRadius: "10px" }}
-              value={email} // Agrega esta línea
-              onChange={(e) => setEmail(e.target.value)} // Agrega esta línea
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <label
               htmlFor="name"
-              className="block text-gray-700 text-sm font-bold mb-2"
+              className="block text-gray-700 font-semibold text-sm mb-2 mt-2"
+              style={{ color: activeTheme === "light" ? "#fff" : "#212121" }}
             >
-              Contraseña
+              CONTRASEÑA
             </label>
+
             <div className="mb-4 relative">
               <input
                 id="password"
@@ -83,8 +98,8 @@ export const Login = () => {
                   borderRadius: "10px",
                   paddingRight: "10px",
                 }}
-                value={password} // Agrega esta línea
-                onChange={(e) => setPassword(e.target.value)} // Agrega esta línea
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <div
                 className="absolute inset-y-0 right-0 pr-3 flex items-center justify-center cursor-pointer"
