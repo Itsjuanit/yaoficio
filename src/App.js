@@ -8,6 +8,7 @@ import "./css/App.css";
 import UseScrollToTop from "./hooks/useScrollToTop";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
+import { Analytics } from "@vercel/analytics/react";
 const Home = lazy(() => import("./pages/Home"));
 const Workers = lazy(() => import("./pages/Workers"));
 const Form = lazy(() => import("./pages/Form"));
@@ -32,6 +33,7 @@ function App() {
         </Router>
         <UseScrollToTop />
       </div>
+      <Analytics />
     </AnimatePresence>
   );
 }
