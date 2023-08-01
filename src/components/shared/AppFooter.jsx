@@ -20,7 +20,7 @@ const AppFooter = () => {
     <div className="container mx-auto">
       <div className="pt-20 sm:pt-30 pb-8 mt-20 border-t-2 border-primary-light dark:border-secondary-dark">
         <div className="font-general-regular flex flex-col justify-center items-center mb-12 sm:mb-28">
-          <p className="text-md sm:text-4xl text-primary-dark dark:text-primary-light mb-5">
+          <p className="text-base sm:text-lg text-primary-dark dark:text-primary-light mb-5">
             Este sitio ha sido realizado por{" "}
             <a
               href="https://portfolio-itsjuanit.vercel.app/"
@@ -34,6 +34,7 @@ const AppFooter = () => {
               ITSJUANIT
             </a>
           </p>
+
           <ul className="flex gap-4 sm:gap-8">
             {socialLinks.map((link) => (
               <a
