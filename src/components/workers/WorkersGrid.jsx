@@ -59,14 +59,9 @@ const WorkersGrid = () => {
   }, [dataTag]);
 
   return (
-    <section
-      className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen"
-      style={{ minHeight: "100vh" }}
-    >
+    <section className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen" style={{ minHeight: "100vh" }}>
       <div className="text-center mb-10">
-        <p className="font-general-medium text-2xl sm:text-4xl mb-1 text-ternary-dark dark:text-ternary-light">
-          LISTA DE TRABAJADORES
-        </p>
+        <p className="font-general-medium text-2xl sm:text-4xl mb-1 text-ternary-dark dark:text-ternary-light">LISTA DE TRABAJADORES</p>
       </div>
 
       <div className="max-w-screen-lg mx-auto">
@@ -89,22 +84,16 @@ const WorkersGrid = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-lg mx-auto">
         {data
-          ?.filter((project) =>
-            project.tag?.name.toLowerCase().includes(search.toLowerCase())
-          )
+          ?.filter((project) => project.tag?.name.toLowerCase().includes(search.toLowerCase()))
           .map((project) => (
             <div key={project._id}>
               <div
                 className="p-4 rounded-lg shadow-md border border-white transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl"
                 style={{
-                  backgroundImage:
-                    "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
+                  backgroundImage: "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
                 }}
               >
-                <h3
-                  className="font-medium text-lg mb-2 font-bold"
-                  style={{ color: "#212121" }}
-                >
+                <h3 className="font-medium text-lg mb-2 font-bold" style={{ color: "#212121" }}>
                   {project.name}
                 </h3>
                 <div>{project.opinion}</div>
@@ -112,8 +101,7 @@ const WorkersGrid = () => {
                   <button
                     style={{
                       backgroundImage: getBackgroundImage(project.tag?.name),
-                      backgroundColor:
-                        activeTheme === "dark" ? "#312E81" : "#fff",
+                      backgroundColor: activeTheme === "dark" ? "#312E81" : "#fff",
                       color: "#212121",
                       paddingTop: "2px",
                       paddingBottom: "2px",
@@ -143,8 +131,7 @@ const WorkersGrid = () => {
                 >
                   <div
                     style={{
-                      backgroundImage:
-                        "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
+                      backgroundImage: "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
                       borderRadius: "inherit",
                       padding: "inherit",
                       width: "150px",
