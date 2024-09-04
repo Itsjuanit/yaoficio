@@ -1,18 +1,11 @@
 import React from "react";
-import { Route, useNavigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-const ProtectedRoute = ({ component: Component, ...rest }) => {
+const ProtectedRoute = () => {
   const isAuthenticated = Boolean(localStorage.getItem("authToken"));
-  const navigate = useNavigate();
 
-  return (
-    <Route
-      {...rest}
-      render={(props) =>
-        isAuthenticated ? <Component {...props} /> : (navigate("/login"), null)
-      }
-    />
-  );
+  // Si no está autenticado, redirige a login
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default ProtectedRoute;
