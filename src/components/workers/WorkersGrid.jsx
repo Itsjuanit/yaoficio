@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import useThemeSwitcher from "../../hooks/useThemeSwitcher";
 import { AiOutlineWhatsApp } from "react-icons/ai";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../firebaseConfig"; // Asegúrate de que este archivo esté bien configurado
 
 const WorkersGrid = () => {
-  const [activeTheme] = useThemeSwitcher();
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
-  const [dataTag, setTag] = useState([]);
-  const URL = `${process.env.REACT_APP_API_PROD}/api`;
+
   const getBackgroundImage = (tag) => {
     if (!tag) {
       return "";
@@ -29,6 +28,8 @@ const WorkersGrid = () => {
         return "linear-gradient(to top, #03e4ac 0%, #ee1e9e 100%)";
       case "CERRAJERO":
         return "linear-gradient(to top, #bbf0e4 0%, #7bafda 100%)";
+      case "ALBAÑIL":
+        return "linear-gradient(to top, #47ceae 0%, #566674 100%)";
       default:
         return "";
     }
@@ -39,27 +40,28 @@ const WorkersGrid = () => {
   };
 
   useEffect(() => {
+    // Función para obtener datos de trabajadores de Firestore y filtrar por "accepted"
     const fetchWorkerData = async () => {
       try {
-        const response = await fetch(`${URL}/worker?status=active`);
-        const data = await response.json();
-        setData(data?.worker);
+        const querySnapshot = await getDocs(collection(db, "workers"));
+        const workers = querySnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .filter((worker) => worker.status === "accepted"); // Filtrar solo los trabajadores con estado "accepted"
+
+        setData(workers);
       } catch (error) {
-        console.error(error);
+        console.error("Error al obtener los trabajadores:", error);
       }
     };
 
     fetchWorkerData();
   }, []);
 
-  useEffect(() => {
-    fetch(URL + "/tag")
-      .then((res) => res.json())
-      .then((data) => setTag(data?.tag));
-  }, [dataTag]);
-
   return (
-    <section className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen" style={{ minHeight: "100vh" }}>
+    <section className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen">
       <div className="text-center mb-10">
         <p className="font-general-medium text-2xl sm:text-4xl mb-1 text-ternary-dark dark:text-ternary-light">LISTA DE TRABAJADORES</p>
       </div>
@@ -84,24 +86,24 @@ const WorkersGrid = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-lg mx-auto">
         {data
-          ?.filter((project) => project.tag?.name.toLowerCase().includes(search.toLowerCase()))
-          .map((project) => (
-            <div key={project._id}>
+          ?.filter((worker) => worker.tag?.toLowerCase().includes(search.toLowerCase())) // Filtro basado en la búsqueda
+          .map((worker) => (
+            <div key={worker.id}>
               <div
                 className="p-4 rounded-lg shadow-md border border-white transition-transform duration-300 ease-in-out transform hover:scale-110 hover:shadow-2xl"
                 style={{
-                  backgroundImage: "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
+                  backgroundImage: getBackgroundImage(worker.tag),
                 }}
               >
                 <h3 className="font-medium text-lg mb-2 font-bold" style={{ color: "#212121" }}>
-                  {project.name}
+                  {worker.name}
                 </h3>
-                <div>{project.opinion}</div>
+                <div>{worker.opinion}</div>
                 <div className="flex flex-wrap mb-4">
                   <button
                     style={{
-                      backgroundImage: getBackgroundImage(project.tag?.name),
-                      backgroundColor: activeTheme === "dark" ? "#312E81" : "#fff",
+                      backgroundImage: getBackgroundImage(worker.tag),
+                      backgroundColor: "#fff",
                       color: "#212121",
                       paddingTop: "2px",
                       paddingBottom: "2px",
@@ -116,11 +118,11 @@ const WorkersGrid = () => {
                       marginRight: "5px",
                     }}
                   >
-                    {project.tag ? project.tag.name : ""}
+                    {worker.tag ? worker.tag : ""}
                   </button>
                 </div>
                 <a
-                  href={project.phone_number}
+                  href={`https://api.whatsapp.com/send?phone=${worker.phone_number}`}
                   target="_blank"
                   rel="noreferrer"
                   className="text-indigo-900 px-4 py-2 rounded-lg shadow cursor-pointer inline-block"

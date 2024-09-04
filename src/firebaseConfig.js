@@ -1,17 +1,18 @@
 // Importa las funciones necesarias de Firebase
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from "firebase/firestore"; // Importa Firestore
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth"; // Importa Firestore
 
-// Tu configuración de Firebase
+// Tu configuración de Firebase usando variables de entorno
 const firebaseConfig = {
-  apiKey: "AIzaSyAQpXIJ7nCBdne8p1agn_cTZS6YfygD-2E",
-  authDomain: "yaoficios.firebaseapp.com",
-  projectId: "yaoficios",
-  storageBucket: "yaoficios.appspot.com",
-  messagingSenderId: "1021721998269",
-  appId: "1:1021721998269:web:754a103872d33efd3bd8d4",
-  measurementId: "G-YXVENXG9M9",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 // Inicializa Firebase
@@ -22,6 +23,7 @@ const db = getFirestore(app); // Aquí se inicializa Firestore
 
 // Inicializa Analytics
 const analytics = getAnalytics(app);
+export const auth = getAuth(app);
 
 // Exporta db para usarlo en otros componentes
 export { db };

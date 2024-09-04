@@ -3,6 +3,8 @@ import { AiFillEyeInvisible, AiFillEye } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebaseConfig"; // Importa tu configuración de Firebase
 import useThemeSwitcher from "../../hooks/useThemeSwitcher";
 
 export const Login = () => {
@@ -20,36 +22,16 @@ export const Login = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch(
-        "https://bkworkers-api.up.railway.app/api/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        }
-      );
-
-      if (response.status === 401) {
-        toast.error("El token no es válido");
-        return;
-      }
-
-      if (response.status !== 200) {
-        throw new Error("Error en la autenticación");
-      }
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
 
       toast.success("Autenticación exitosa");
 
-      const data = await response.json();
-
-      localStorage.setItem("authToken", data.token);
-
-      navigate("/dashboard");
+      localStorage.setItem("authToken", user.accessToken); // Guarda el token en localStorage
+      navigate("/dashboard"); // Redirige al dashboard
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Por favor cargar usuario y contraseña correctos.");
+      console.error("Error en la autenticación:", error);
+      toast.error("Por favor ingresa el usuario y la contraseña correctos.");
     }
   };
 
@@ -68,13 +50,12 @@ export const Login = () => {
             <label
               htmlFor="name"
               className="block text-gray-700 text-sm font-semibold mb-2"
-              type="email"
               style={{ color: activeTheme === "light" ? "#fff" : "#212121" }}
             >
               EMAIL
             </label>
             <input
-              id="name"
+              id="email"
               type="email"
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
               style={{ borderRadius: "10px" }}
@@ -82,7 +63,7 @@ export const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
             <label
-              htmlFor="name"
+              htmlFor="password"
               className="block text-gray-700 font-semibold text-sm mb-2 mt-2"
               style={{ color: activeTheme === "light" ? "#fff" : "#212121" }}
             >
@@ -105,17 +86,12 @@ export const Login = () => {
                 className="absolute inset-y-0 right-0 pr-3 flex items-center justify-center cursor-pointer"
                 onClick={handlePasswordVisibility}
               >
-                {passwordVisible ? (
-                  <AiFillEye size={20} />
-                ) : (
-                  <AiFillEyeInvisible size={20} />
-                )}
+                {passwordVisible ? <AiFillEye size={20} /> : <AiFillEyeInvisible size={20} />}
               </div>
             </div>
             <button
               style={{
-                backgroundImage:
-                  "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
+                backgroundImage: "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
                 color: "#212121",
                 borderRadius: "10px",
                 marginTop: "40px",
