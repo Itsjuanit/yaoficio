@@ -2,16 +2,15 @@ import { useState, useEffect } from "react";
 import { AiOutlineWhatsApp } from "react-icons/ai";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+import PaginationNav1 from "../reusable/PaginationNav1"; // Ajusta la ruta según tu estructura
 
 const WorkersGrid = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
+  // Usamos pageIndex (0-based) para la paginación
+  const [pageIndex, setPageIndex] = useState(0);
+  const itemsPerPage = 9;
 
-  // Estados para paginación
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 9; // Cantidad de trabajadores por página
-
-  // Función para asignar un background según la etiqueta
   const getBackgroundImage = (tag) => {
     if (!tag) return "";
     switch (tag.toUpperCase()) {
@@ -38,47 +37,38 @@ const WorkersGrid = () => {
     }
   };
 
-  // Actualiza la búsqueda y resetea la página actual
   const handleSearch = (e) => {
     setSearch(e.target.value);
-    setCurrentPage(1);
+    setPageIndex(0);
   };
 
-  // Listener en tiempo real para obtener los trabajadores aceptados
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "workers"), (snapshot) => {
-      const workers = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .filter((worker) => worker.status === "accepted");
-      setData(workers);
+      const allWorkers = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log("Todos los workers recibidos:", allWorkers);
+      const acceptedWorkers = allWorkers.filter((worker) => worker.status === "accepted");
+      console.log("Trabajadores aceptados:", acceptedWorkers);
+      setData(acceptedWorkers);
     });
-
     return () => unsubscribe();
   }, []);
 
-  // Filtrar datos según la búsqueda
-  const filteredData = data.filter((worker) => worker.tag?.toLowerCase().includes(search.toLowerCase()));
+  // Filtrado considerando worker.tag o worker.tags (array)
+  const filteredData = data.filter((worker) => {
+    const tagValue = worker.tag ? worker.tag : worker.tags ? worker.tags.join(", ") : "";
+    return tagValue.toLowerCase().includes(search.toLowerCase());
+  });
+  console.log("Trabajadores filtrados:", filteredData);
 
-  // Cálculo de paginación
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  // Cálculo de paginación (0-based)
+  const indexOfFirstItem = pageIndex * itemsPerPage;
+  const indexOfLastItem = indexOfFirstItem + itemsPerPage;
   const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-  const goToPage = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
-
-  const goToPreviousPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const goToNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
+  console.log("Página actual:", pageIndex, "Total páginas:", totalPages);
 
   return (
     <section className="py-5 sm:py-10 mt-5 sm:mt-10 min-h-screen">
@@ -104,14 +94,14 @@ const WorkersGrid = () => {
         </div>
       </div>
 
-      {/* Grid con separación horizontal y vertical */}
+      {/* Grid de tarjetas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-10 gap-y-8 max-w-screen-lg mx-auto px-4">
         {currentItems.map((worker) => (
           <div key={worker.id} className="group">
             <div
               className="mb-4 relative overflow-hidden rounded-xl shadow-lg transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-1"
               style={{
-                backgroundImage: getBackgroundImage(worker.tag),
+                backgroundImage: getBackgroundImage(worker.tag ? worker.tag : worker.tags ? worker.tags.join(", ") : ""),
                 marginRight: "10px",
               }}
             >
@@ -120,19 +110,16 @@ const WorkersGrid = () => {
                   <span
                     className="inline-block px-3 py-1 text-xs font-semibold rounded-full shadow-sm"
                     style={{
-                      backgroundImage: getBackgroundImage(worker.tag),
+                      backgroundImage: getBackgroundImage(worker.tag ? worker.tag : worker.tags ? worker.tags.join(", ") : ""),
                       backgroundColor: "rgba(255, 255, 255, 0.7)",
                       color: "#212121",
                     }}
                   >
-                    {worker.tag || "General"}
+                    {worker.tag ? worker.tag : worker.tags ? worker.tags.join(", ") : "General"}
                   </span>
                 </div>
-
                 <h3 className="font-bold text-xl mb-2 text-gray-900">{worker.name}</h3>
-
                 <div className="mb-4 text-gray-700 text-sm min-h-[60px] line-clamp-3">{worker.opinion}</div>
-
                 <a
                   href={`https://api.whatsapp.com/send?phone=${worker.phone_number}`}
                   target="_blank"
@@ -162,28 +149,16 @@ const WorkersGrid = () => {
         </div>
       )}
 
+      {/* Componente de paginación */}
       {totalPages > 1 && (
-        <div className="flex justify-center items-center mt-8 gap-2">
-          <button onClick={goToPreviousPage} disabled={currentPage === 1} className="px-3 py-1 border rounded disabled:opacity-50">
-            Anterior
-          </button>
-
-          {[...Array(totalPages).keys()].map((page) => {
-            const pageNumber = page + 1;
-            return (
-              <button
-                key={pageNumber}
-                onClick={() => goToPage(pageNumber)}
-                className={`px-3 py-1 border rounded ${currentPage === pageNumber ? "bg-blue-500 text-white" : "bg-white text-gray-700"}`}
-              >
-                {pageNumber}
-              </button>
-            );
-          })}
-
-          <button onClick={goToNextPage} disabled={currentPage === totalPages} className="px-3 py-1 border rounded disabled:opacity-50">
-            Siguiente
-          </button>
+        <div className="flex justify-center items-center mt-8">
+          <PaginationNav1
+            gotoPage={setPageIndex}
+            canPreviousPage={pageIndex > 0}
+            canNextPage={pageIndex < totalPages - 1}
+            pageCount={totalPages}
+            pageIndex={pageIndex}
+          />
         </div>
       )}
     </section>
