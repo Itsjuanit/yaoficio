@@ -104,7 +104,6 @@ const AppHeader = () => {
           </Link>
         </div>
 
-        {/* Header right section buttons */}
         <div className="hidden sm:flex justify-between items-center flex-col md:flex-row">{/* Theme switcher large screen */}</div>
       </div>
     </motion.nav>
