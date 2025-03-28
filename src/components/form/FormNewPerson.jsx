@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { collection, addDoc } from "firebase/firestore"; // Importa Firestore
-import { db } from "../../firebaseConfig"; // Asegúrate de tener este archivo configurado correctamente
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
 
 export const FormNewPerson = () => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
   const [opinion, setOpinion] = useState("");
-  const [tag, setTag] = useState("");
+  const [tags, setTags] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
 
-  // Listado estático de categorías (oficios)
   const categories = [
     { id: 1, name: "Plomero" },
     { id: 2, name: "Gasista" },
@@ -23,47 +24,51 @@ export const FormNewPerson = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!name || !number || !opinion || !tag) {
+    if (!name || !number || !opinion || tags.length === 0) {
       toast.error("Por favor completa todos los campos");
       return;
     }
 
     const data = {
       name,
-      phone_number: "https://api.whatsapp.com/send?phone=54" + number,
+      phone_number: "54" + number,
       opinion,
-      tag,
-      status: "pending", // Estado inicial del trabajador
+      tags,
+      status: "pending",
     };
 
     try {
-      // Log para mostrar los datos que se van a guardar
-      console.log("Datos a guardar en Firestore:", data);
-
-      // Guardar los datos en Firestore
       const docRef = await addDoc(collection(db, "workers"), data);
-
-      // Log del ID del documento recién creado en Firestore
       console.log("Documento agregado con ID:", docRef.id);
-
       setName("");
       setNumber("");
       setOpinion("");
-      setTag("");
+      setTags([]);
+      setSelectedCategory("");
+      setCustomCategory("");
       toast.success("Tu información ha sido enviada y guardada.");
     } catch (error) {
-      // Log para capturar cualquier error en la operación de Firestore
       console.error("Error al guardar en Firestore:", error);
       toast.error("Error al enviar la información.");
     }
   };
 
-  const onChangeSelect = (event) => {
-    setTag(event.target.value);
+  const capitalizeFirstLetter = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+  const handleSelectChange = (event) => {
+    const value = event.target.value;
+    setSelectedCategory(value);
+    if (value !== "other") {
+      setTags([value]);
+      setCustomCategory("");
+    } else {
+      setTags([]); // Se espera que se ingrese un oficio personalizado
+    }
   };
 
-  const capitalizeFirstLetter = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
+  const handleCustomCategoryChange = (event) => {
+    setCustomCategory(event.target.value);
+    setTags([event.target.value]);
   };
 
   return (
@@ -78,15 +83,7 @@ export const FormNewPerson = () => {
               id="name"
               type="text"
               value={name}
-              onChange={(event) => {
-                const regex = /^[a-zA-Z\s]+$/;
-                const inputText = event.target.value;
-                if (regex.test(inputText)) {
-                  setName(inputText);
-                } else {
-                  alert("Solo se permiten letras y espacios en blanco");
-                }
-              }}
+              onChange={(event) => setName(event.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
               style={{ borderRadius: "10px" }}
             />
@@ -117,23 +114,33 @@ export const FormNewPerson = () => {
             />
           </div>
           <div className="mb-4">
-            <label htmlFor="tag" className="block text-gray-700 text-sm font-bold mb-2">
-              Categoría:
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Categoría:</label>
             <select
-              id="tag"
-              value={tag}
-              onChange={onChangeSelect}
+              value={selectedCategory}
+              onChange={handleSelectChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
               style={{ borderRadius: "10px" }}
             >
-              <option value="">Selecciona una categoría</option>
+              <option value="">Seleccione un oficio</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.name}>
                   {capitalizeFirstLetter(category.name)}
                 </option>
               ))}
+              <option value="other">Otro oficio (sugerir)</option>
             </select>
+            {selectedCategory === "other" && (
+              <div className="mt-2">
+                <input
+                  type="text"
+                  value={customCategory}
+                  onChange={handleCustomCategoryChange}
+                  placeholder="Sugerir nuevo oficio"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline border-gray-200 rounded-md"
+                  style={{ borderRadius: "10px" }}
+                />
+              </div>
+            )}
           </div>
           <button
             style={{
