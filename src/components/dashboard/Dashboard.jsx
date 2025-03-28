@@ -1,13 +1,115 @@
-import React, { useState, useEffect } from "react";
-import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  AiOutlineCheck,
+  AiOutlineClose,
+  AiOutlineDelete,
+  AiOutlinePhone,
+  AiOutlineTag,
+  AiOutlineComment,
+  AiOutlineInfoCircle,
+} from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
-import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
-import { db } from "../../firebaseConfig"; // Asegúrate de que esta ruta sea correcta
+import { collection, getDocs, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db } from "../../firebaseConfig";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const Dashboard = () => {
   const [cards, setCards] = useState([]);
-  const [activeTab, setActiveTab] = useState("all"); // Tab activo
+  const [activeTab, setActiveTab] = useState("all"); // "all", "accepted" o "rejected"
   const navigate = useNavigate();
+
+  // Estilos inline para componentes
+  const styles = {
+    container: {
+      minHeight: "100vh",
+      backgroundColor: "#fff",
+    },
+    header: {
+      backgroundColor: "#ffffff",
+      padding: "1.5rem 1rem",
+    },
+    headerTitle: {
+      fontSize: "1.5rem",
+      fontWeight: "700",
+      color: "#1f2937",
+    },
+    content: {
+      maxWidth: "1200px",
+      margin: "0 auto",
+      padding: "2rem 1rem",
+    },
+    tabsContainer: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "0.5rem",
+      marginBottom: "2rem",
+    },
+    tab: {
+      padding: "0.5rem 1rem",
+      borderRadius: "0.5rem",
+      fontWeight: "500",
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+      border: "1px solid #fff",
+      backgroundColor: "#ffffff",
+      color: "#4b5563",
+    },
+    tabActive: {
+      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+    },
+    tabAll: {
+      backgroundColor: "#3b82f6",
+      color: "#ffffff",
+      border: "1px solid #3b82f6",
+    },
+    tabAccepted: {
+      backgroundColor: "#10b981",
+      color: "#ffffff",
+      border: "1px solid #10b981",
+    },
+    tabRejected: {
+      backgroundColor: "#ef4444",
+      color: "#ffffff",
+      border: "1px solid #ef4444",
+    },
+    cardsGrid: {
+      display: "grid",
+      gridTemplateColumns: "repeat(1, 1fr)",
+      gap: "1.5rem",
+    },
+    noCards: {
+      gridColumn: "1 / -1",
+      textAlign: "center",
+      padding: "2.5rem 0",
+      color: "#6b7280",
+    },
+  };
+
+  // Media queries para el grid
+  useEffect(() => {
+    const updateGridColumns = () => {
+      const cardsGrid = document.getElementById("cards-grid");
+      if (cardsGrid) {
+        if (window.innerWidth >= 1280) {
+          cardsGrid.style.gridTemplateColumns = "repeat(4, 1fr)";
+        } else if (window.innerWidth >= 1024) {
+          cardsGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
+        } else if (window.innerWidth >= 640) {
+          cardsGrid.style.gridTemplateColumns = "repeat(2, 1fr)";
+        } else {
+          cardsGrid.style.gridTemplateColumns = "repeat(1, 1fr)";
+        }
+      }
+    };
+
+    window.addEventListener("resize", updateGridColumns);
+    updateGridColumns();
+
+    return () => window.removeEventListener("resize", updateGridColumns);
+  }, []);
 
   // Función para obtener los datos de Firestore
   const fetchCards = async () => {
@@ -29,13 +131,28 @@ export const Dashboard = () => {
     try {
       const workerRef = doc(db, "workers", workerId);
       await updateDoc(workerRef, {
-        status: newStatus, // Cambiar el estado a "accepted" o "rejected"
+        status: newStatus,
       });
       console.log(`Se actualizó el estado del trabajador ${workerId} a ${newStatus}`);
-      // Refrescar los datos después de la actualización
+      toast.success(`Trabajador marcado como ${newStatus}`);
       fetchCards();
     } catch (error) {
       console.error("Error updating worker status:", error);
+      toast.error("Error al actualizar el estado del trabajador");
+    }
+  };
+
+  // Función para borrar un trabajador de Firestore y mostrar un toast
+  const deleteWorker = async (workerId) => {
+    try {
+      const workerRef = doc(db, "workers", workerId);
+      await deleteDoc(workerRef);
+      console.log(`Trabajador ${workerId} eliminado`);
+      toast.success("Trabajador eliminado correctamente");
+      fetchCards();
+    } catch (error) {
+      console.error("Error deleting worker:", error);
+      toast.error("Error al borrar el trabajador");
     }
   };
 
@@ -50,7 +167,7 @@ export const Dashboard = () => {
     }
   }, [navigate]);
 
-  // Filtrar trabajadores por estado
+  // Filtrar trabajadores según la pestaña activa
   const filteredCards = cards.filter((worker) => {
     if (activeTab === "all") return true;
     return worker.status === activeTab;
@@ -58,84 +175,355 @@ export const Dashboard = () => {
 
   console.log("Trabajadores filtrados para la pestaña", activeTab, ":", filteredCards);
 
+  // Obtener el color de la etiqueta según la profesión
+  const getTagStyles = (tag) => {
+    if (!tag)
+      return {
+        backgroundColor: "#e5e7eb",
+        color: "#4b5563",
+      };
+
+    const tagLower = tag.toLowerCase();
+    if (tagLower.includes("pintor"))
+      return {
+        backgroundColor: "#dbeafe",
+        color: "#1e40af",
+      };
+    if (tagLower.includes("plomero"))
+      return {
+        backgroundColor: "#dcfce7",
+        color: "#166534",
+      };
+    if (tagLower.includes("electricista"))
+      return {
+        backgroundColor: "#fef3c7",
+        color: "#92400e",
+      };
+    if (tagLower.includes("gasista"))
+      return {
+        backgroundColor: "#fee2e2",
+        color: "#b91c1c",
+      };
+    return {
+      backgroundColor: "#f3e8ff",
+      color: "#6b21a8",
+    };
+  };
+
+  // Obtener el color del estado
+  const getStatusStyles = (status) => {
+    if (status === "accepted")
+      return {
+        backgroundColor: "#fff",
+        color: "#166534",
+      };
+    if (status === "rejected")
+      return {
+        backgroundColor: "#fee2e2",
+        color: "#b91c1c",
+      };
+    return {
+      backgroundColor: "#e5e7eb",
+      color: "#4b5563",
+    };
+  };
+
+  // Obtener el color de la barra superior según el estado
+  const getStatusBarColor = (status) => {
+    if (status === "accepted") return "#B8F28B";
+    if (status === "rejected") return "#ef4444";
+    return "#3b82f6";
+  };
+
   // Renderizar una tarjeta de trabajador
   const renderWorkerCard = (worker) => {
-    // Mostrar la etiqueta: si worker.tag existe, lo usamos; de lo contrario, verificamos si existe worker.tags (array)
+    // Mostrar la etiqueta: si worker.tag existe, se usa; si no, se revisa worker.tags (array)
     const displayTag = worker.tag || (worker.tags ? worker.tags.join(", ") : "Sin etiqueta");
+    const tagStyles = getTagStyles(displayTag);
+    const statusStyles = getStatusStyles(worker.status);
+    const statusBarColor = getStatusBarColor(worker.status);
+
+    // Estilos para la tarjeta
+    const cardStyles = {
+      card: {
+        backgroundColor: "#ffffff",
+        borderRadius: "0.5rem",
+        boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",
+        overflow: "hidden",
+        border: "1px solid #f3f4f6",
+        transition: "all 0.3s ease",
+      },
+      statusBar: {
+        height: "4px",
+        width: "100%",
+        backgroundColor: statusBarColor,
+      },
+      content: {
+        padding: "1.25rem",
+      },
+      title: {
+        fontSize: "1.25rem",
+        fontWeight: "700",
+        marginBottom: "1rem",
+        color: "#1f2937",
+      },
+      infoContainer: {
+        marginBottom: "0.75rem",
+      },
+      infoRow: {
+        display: "flex",
+        alignItems: "flex-start",
+        marginBottom: "0.75rem",
+        fontSize: "0.875rem",
+      },
+      icon: {
+        color: "#6b7280",
+        marginRight: "0.5rem",
+        flexShrink: 0,
+      },
+      label: {
+        fontWeight: "500",
+        marginRight: "0.5rem",
+        color: "#4b5563",
+      },
+      value: {
+        color: "#6b7280",
+      },
+      phoneLink: {
+        color: "#2563eb",
+        textDecoration: "none",
+      },
+      phoneLinkHover: {
+        textDecoration: "underline",
+      },
+      tag: {
+        display: "inline-block",
+        padding: "0.25rem 0.75rem",
+        borderRadius: "9999px",
+        fontSize: "0.75rem",
+        fontWeight: "500",
+        ...tagStyles,
+      },
+      status: {
+        display: "inline-block",
+        padding: "0.25rem 0.75rem",
+        borderRadius: "9999px",
+        fontSize: "0.75rem",
+        fontWeight: "500",
+        ...statusStyles,
+      },
+      divider: {
+        borderTop: "1px solid #f3f4f6",
+        margin: "1rem 0",
+      },
+      actions: {
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "0.25rem",
+        marginTop: "0.5rem",
+      },
+      button: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: "9999px",
+        padding: "0.5rem",
+        transition: "all 0.2s ease",
+        cursor: "pointer",
+        border: "none",
+        background: "none",
+      },
+      acceptButton: {
+        color: worker.status === "accepted" ? "#86efac" : "#22c55e",
+      },
+      acceptButtonHover: {
+        backgroundColor: "#f0fdf4",
+      },
+      rejectButton: {
+        color: worker.status === "rejected" ? "#fca5a5" : "#ef4444",
+      },
+      rejectButtonHover: {
+        backgroundColor: "#fef2f2",
+      },
+      deleteButton: {
+        color: "#6b7280",
+      },
+      deleteButtonHover: {
+        backgroundColor: "#f9fafb",
+        color: "#4b5563",
+      },
+      srOnly: {
+        position: "absolute",
+        width: "1px",
+        height: "1px",
+        padding: "0",
+        margin: "-1px",
+        overflow: "hidden",
+        clip: "rect(0, 0, 0, 0)",
+        whiteSpace: "nowrap",
+        borderWidth: "0",
+      },
+    };
 
     return (
       <div
-        className="bg-white p-6 rounded-md shadow-md"
         key={worker.id}
-        style={{
-          backgroundImage: "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
+        style={cardStyles.card}
+        onMouseOver={(e) => {
+          e.currentTarget.style.boxShadow = "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)";
+        }}
+        onMouseOut={(e) => {
+          e.currentTarget.style.boxShadow = "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)";
         }}
       >
-        <div>
-          <h2 className="text-xl font-semibold mb-4">{worker.name}</h2>
-          <p>
-            Phone Number: <a href={`tel:${worker.phone_number}`}>{worker.phone_number}</a>
-          </p>
-          <p>Opinion: {worker.opinion}</p>
-          <p>Status: {worker.status}</p>
-          <p>Tag: {displayTag}</p>
-          {worker.status === "pending" && (
-            <div className="flex mt-3 items-center justify-center">
-              <button
-                className="flex items-center justify-center text-green-500 rounded-full ml-2"
-                onClick={() => updateWorkerStatus(worker.id, "accepted")}
-                style={{
-                  backgroundImage: "linear-gradient(120deg, #d4fc79 0%, #96e6a1 100%)",
-                  borderRadius: "10px",
-                  padding: "inherit",
-                  width: "50px",
+        {/* Barra superior de color según el estado */}
+        <div style={cardStyles.statusBar}></div>
+
+        <div style={cardStyles.content}>
+          <h2 style={cardStyles.title}>{worker.name}</h2>
+
+          <div style={cardStyles.infoContainer}>
+            <div style={cardStyles.infoRow}>
+              <AiOutlinePhone style={cardStyles.icon} />
+              <span style={cardStyles.label}>Phone Number:</span>
+              <a
+                href={`tel:${worker.phone_number}`}
+                style={cardStyles.phoneLink}
+                onMouseOver={(e) => {
+                  e.target.style.textDecoration = "underline";
                 }}
-                title="Aceptar trabajador"
-              >
-                <AiOutlineCheck className="text-xl mr-1" />
-              </button>
-              <button
-                className="flex items-center justify-center text-red-500 rounded-full ml-2"
-                onClick={() => updateWorkerStatus(worker.id, "rejected")}
-                style={{
-                  backgroundImage: "linear-gradient(120deg, #fc798a 0%, #d4b0b0 100%)",
-                  borderRadius: "10px",
-                  padding: "inherit",
-                  width: "50px",
+                onMouseOut={(e) => {
+                  e.target.style.textDecoration = "none";
                 }}
-                title="Rechazar trabajador"
               >
-                <AiOutlineClose className="text-xl" />
-              </button>
+                {worker.phone_number}
+              </a>
             </div>
-          )}
+
+            <div style={cardStyles.infoRow}>
+              <AiOutlineComment style={{ ...cardStyles.icon, marginTop: "2px" }} />
+              <span style={cardStyles.label}>Opinion:</span>
+              <span style={cardStyles.value}>{worker.opinion}</span>
+            </div>
+
+            <div style={cardStyles.infoRow}>
+              <AiOutlineInfoCircle style={cardStyles.icon} />
+              <span style={cardStyles.label}>Status:</span>
+              <span style={cardStyles.status}>{worker.status}</span>
+            </div>
+
+            <div style={cardStyles.infoRow}>
+              <AiOutlineTag style={cardStyles.icon} />
+              <span style={cardStyles.label}>Tag:</span>
+              <span style={cardStyles.tag}>{displayTag}</span>
+            </div>
+          </div>
+
+          {/* Línea separadora */}
+          <div style={cardStyles.divider}></div>
+
+          {/* Botones para actualizar estado y borrar */}
+          <div style={cardStyles.actions}>
+            <button
+              style={{
+                ...cardStyles.button,
+                ...cardStyles.acceptButton,
+                cursor: worker.status === "accepted" ? "not-allowed" : "pointer",
+              }}
+              onClick={() => worker.status !== "accepted" && updateWorkerStatus(worker.id, "accepted")}
+              disabled={worker.status === "accepted"}
+              title="Marcar como Aceptado"
+              onMouseOver={(e) => {
+                if (worker.status !== "accepted") {
+                  e.currentTarget.style.backgroundColor = "#f0fdf4";
+                  e.currentTarget.style.color = "#15803d";
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = worker.status === "accepted" ? "#86efac" : "#22c55e";
+              }}
+            >
+              <AiOutlineCheck style={{ fontSize: "1.25rem" }} />
+              <span style={cardStyles.srOnly}>Aceptar</span>
+            </button>
+            <button
+              style={{
+                ...cardStyles.button,
+                ...cardStyles.rejectButton,
+                cursor: worker.status === "rejected" ? "not-allowed" : "pointer",
+              }}
+              onClick={() => worker.status !== "rejected" && updateWorkerStatus(worker.id, "rejected")}
+              disabled={worker.status === "rejected"}
+              title="Marcar como Rechazado"
+              onMouseOver={(e) => {
+                if (worker.status !== "rejected") {
+                  e.currentTarget.style.backgroundColor = "#fef2f2";
+                  e.currentTarget.style.color = "#b91c1c";
+                }
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = worker.status === "rejected" ? "#fca5a5" : "#ef4444";
+              }}
+            >
+              <AiOutlineClose style={{ fontSize: "1.25rem" }} />
+              <span style={cardStyles.srOnly}>Rechazar</span>
+            </button>
+            <button
+              style={{ ...cardStyles.button, ...cardStyles.deleteButton }}
+              onClick={() => deleteWorker(worker.id)}
+              title="Borrar trabajador"
+              onMouseOver={(e) => {
+                e.currentTarget.style.backgroundColor = "#f9fafb";
+                e.currentTarget.style.color = "#4b5563";
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+                e.currentTarget.style.color = "#6b7280";
+              }}
+            >
+              <AiOutlineDelete style={{ fontSize: "1.25rem" }} />
+              <span style={cardStyles.srOnly}>Eliminar</span>
+            </button>
+          </div>
         </div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="bg-white shadow py-6 px-4">
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
+    <div style={styles.container}>
+      <ToastContainer />
+      <div style={styles.header}>
+        <h1 style={styles.headerTitle}>Dashboard</h1>
       </div>
-      <div className="container mx-auto py-8">
+      <div style={styles.content}>
         {/* Tabs */}
-        <div className="flex space-x-4 mb-6">
+        <div style={styles.tabsContainer}>
           <button
-            className={`px-4 py-2 text-black font-semibold rounded-lg ${activeTab === "all" ? "bg-blue-500" : "bg-gray-400"}`}
+            style={{
+              ...styles.tab,
+              ...(activeTab === "all" ? { ...styles.tabActive, ...styles.tabAll } : {}),
+            }}
             onClick={() => setActiveTab("all")}
           >
             Todos
           </button>
           <button
-            className={`px-4 py-2 text-black font-semibold rounded-lg ${activeTab === "accepted" ? "bg-blue-500" : "bg-gray-400"}`}
+            style={{
+              ...styles.tab,
+              ...(activeTab === "accepted" ? { ...styles.tabActive, ...styles.tabAccepted } : {}),
+            }}
             onClick={() => setActiveTab("accepted")}
           >
             Aceptados
           </button>
           <button
-            className={`px-4 py-2 text-black font-semibold rounded-lg ${activeTab === "rejected" ? "bg-blue-500" : "bg-gray-400"}`}
+            style={{
+              ...styles.tab,
+              ...(activeTab === "rejected" ? { ...styles.tabActive, ...styles.tabRejected } : {}),
+            }}
             onClick={() => setActiveTab("rejected")}
           >
             Rechazados
@@ -143,8 +531,12 @@ export const Dashboard = () => {
         </div>
 
         {/* Mostrar trabajadores según la pestaña seleccionada */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-lg mx-auto">
-          {filteredCards.map((worker) => renderWorkerCard(worker))}
+        <div id="cards-grid" style={styles.cardsGrid}>
+          {filteredCards.length > 0 ? (
+            filteredCards.map((worker) => renderWorkerCard(worker))
+          ) : (
+            <div style={styles.noCards}>No hay trabajadores para mostrar en esta categoría.</div>
+          )}
         </div>
       </div>
     </div>
