@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 export const FormNewPerson = () => {
@@ -35,6 +35,7 @@ export const FormNewPerson = () => {
       opinion,
       tags,
       status: "pending",
+      date: serverTimestamp(), // Se agrega la fecha de creación
     };
 
     try {

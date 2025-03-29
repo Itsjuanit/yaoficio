@@ -111,7 +111,7 @@ export const Dashboard = () => {
     return () => window.removeEventListener("resize", updateGridColumns);
   }, []);
 
-  // Función para obtener los datos de Firestore
+  // Función para obtener los datos de Firestore y ordenarlos por fecha (más recientes primero)
   const fetchCards = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "workers"));
@@ -119,6 +119,14 @@ export const Dashboard = () => {
         id: doc.id,
         ...doc.data(),
       }));
+
+      workerData.sort((a, b) => {
+        // Si se guardó la fecha como un Firebase Timestamp, se usa toDate()
+        const dateA = a.date?.toDate ? a.date.toDate() : new Date(a.date);
+        const dateB = b.date?.toDate ? b.date.toDate() : new Date(b.date);
+        return dateB - dateA;
+      });
+
       console.log("Datos obtenidos en fetchCards:", workerData);
       setCards(workerData);
     } catch (error) {
@@ -175,7 +183,7 @@ export const Dashboard = () => {
 
   console.log("Trabajadores filtrados para la pestaña", activeTab, ":", filteredCards);
 
-  // Obtener el color de la etiqueta según la profesión
+  // Funciones para definir estilos según la etiqueta o estado
   const getTagStyles = (tag) => {
     if (!tag)
       return {
@@ -210,7 +218,6 @@ export const Dashboard = () => {
     };
   };
 
-  // Obtener el color del estado
   const getStatusStyles = (status) => {
     if (status === "accepted")
       return {
@@ -228,7 +235,6 @@ export const Dashboard = () => {
     };
   };
 
-  // Obtener el color de la barra superior según el estado
   const getStatusBarColor = (status) => {
     if (status === "accepted") return "#B8F28B";
     if (status === "rejected") return "#ef4444";
@@ -237,13 +243,11 @@ export const Dashboard = () => {
 
   // Renderizar una tarjeta de trabajador
   const renderWorkerCard = (worker) => {
-    // Mostrar la etiqueta: si worker.tag existe, se usa; si no, se revisa worker.tags (array)
     const displayTag = worker.tag || (worker.tags ? worker.tags.join(", ") : "Sin etiqueta");
     const tagStyles = getTagStyles(displayTag);
     const statusStyles = getStatusStyles(worker.status);
     const statusBarColor = getStatusBarColor(worker.status);
 
-    // Estilos para la tarjeta
     const cardStyles = {
       card: {
         backgroundColor: "#ffffff",
@@ -293,9 +297,6 @@ export const Dashboard = () => {
         color: "#2563eb",
         textDecoration: "none",
       },
-      phoneLinkHover: {
-        textDecoration: "underline",
-      },
       tag: {
         display: "inline-block",
         padding: "0.25rem 0.75rem",
@@ -336,21 +337,11 @@ export const Dashboard = () => {
       acceptButton: {
         color: worker.status === "accepted" ? "#86efac" : "#22c55e",
       },
-      acceptButtonHover: {
-        backgroundColor: "#f0fdf4",
-      },
       rejectButton: {
         color: worker.status === "rejected" ? "#fca5a5" : "#ef4444",
       },
-      rejectButtonHover: {
-        backgroundColor: "#fef2f2",
-      },
       deleteButton: {
         color: "#6b7280",
-      },
-      deleteButtonHover: {
-        backgroundColor: "#f9fafb",
-        color: "#4b5563",
       },
       srOnly: {
         position: "absolute",
@@ -389,12 +380,8 @@ export const Dashboard = () => {
               <a
                 href={`tel:${worker.phone_number}`}
                 style={cardStyles.phoneLink}
-                onMouseOver={(e) => {
-                  e.target.style.textDecoration = "underline";
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.textDecoration = "none";
-                }}
+                onMouseOver={(e) => (e.target.style.textDecoration = "underline")}
+                onMouseOut={(e) => (e.target.style.textDecoration = "none")}
               >
                 {worker.phone_number}
               </a>
